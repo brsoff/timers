@@ -2,55 +2,66 @@ var app = {
   initialize: function () {
     this.display = new app.Display ();
     app.bind();
+
+    app.Clock.prototype.countdown = function() {
+      var self = this;
+
+      self.populateClock();
+
+      setInterval(function () {
+        self.populateClock();
+      }, 1000);
+    },
+
+    app.Clock.prototype.populateClock = function () {
+      var self = this;
+
+      var id = self.id;
+      var current = (new Date().getTime() / 1000);
+      var remaining = (self.expiresAt - current); //seconds
+
+      if (remaining < 1) {
+        $('[data-id=' + id + ']').addClass('expired');
+      } else {
+        var hours = self.formatNumber(remaining / 3600);
+        remaining = remaining % 3600;
+
+        var minutes = self.formatNumber(remaining / 60);
+        var seconds = self.formatNumber(remaining % 60);
+
+        var $clock = $('[data-id=' + id + ']');
+
+        $clock.find('.hour').html(hours);
+        $clock.find('.minute').html(minutes);
+        $clock.find('.second').html(seconds);
+      }
+    },
+
+    app.Clock.prototype.formatNumber = function (num) {
+      var parsed = parseInt(num).toString();
+      var formatted = parsed.length === 1 ? ('0' + parsed) : parsed
+      return formatted;
+    }
   },
 
   bind: function () {
     $('[data-behavior=\'add-clock\'').on('click', function () {
       var name = window.prompt('Please type a name for this clock:');
-      var clock = new app.Clock (name);
-
-      app.display.clocks.push(clock);
-      app.makeClock(clock);
+      app.makeClock(name);
     });
   },
 
-  setTimer: function (id, minutes) {
-    var target = ((new Date().getTime()) + (minutes * 60 * 1000)) / 1000;
+  makeClock: function (name) {
+    var clock = new app.Clock(name);
 
-    setInterval(function () {
-      var current = (new Date().getTime() / 1000);
-      var remaining = (target - current);
+    app.display.clocks.push(clock);
 
-      if (remaining < 0) {
-        $('[data-id=' + id + ']').addClass('expired');
-      } else {
-        var hours = parseInt(remaining / 3600);
-        var minutes = parseInt(remaining / 60);
-        var seconds = parseInt(remaining % 60);
-
-        $('[data-id=' + id + ']').find('.hour').html(hours);
-        $('[data-id=' + id + ']').find('.minute').html(minutes);
-        $('[data-id=' + id + ']').find('.second').html(seconds);
-      }
-    }, 1000);
-  },
-
-  Display: function () {
-    this.clocks = [];
-  },
-
-  Clock: function (name) {
-    this.id = app.display.clocks.length + 1;
-    this.name = name;
-    this.begin = '';
-  },
-
-  makeClock: function (clock) {
     var source = $("#clock-template").html();
     var template = Handlebars.compile(source);
     var html = template(clock);
 
     $('[data-target=\'clocks\']').append(html);
+
     app.bindClockBehaviors();
   },
 
@@ -61,6 +72,31 @@ var app = {
 
       app.setTimer(id, minutes);
     });
+  },
+
+  setTimer: function (id, minutes) {
+    var clock = app.display.clocks.filter(function (c) { return c.id === id; });
+    var startsAt = new Date().getTime();
+    var expiresAt = (startsAt + (minutes * 60 * 1000)) / 1000;
+
+    clock[0].minutes = parseInt(minutes);
+    clock[0].expiresAt = startsAt;
+    clock[0].expiresAt = expiresAt;
+    clock[0].countdown();
+  },
+
+  Display: function () {
+    this.clocks = [];
+  },
+
+  Clock: function (name) {
+    var self = this;
+
+    self.id = app.display.clocks.length + 1;
+    self.name = name;
+    self.startsAt = null;
+    self.expiresAt = null;
+    self.minutes = null;
   }
 }
 
