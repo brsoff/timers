@@ -2,10 +2,35 @@
 <html>
 <head>
 	<title>ER Codes</title>
+  <link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
+  <script src='javascripts/handlebars.js'></script>
 	<script src='javascripts/jquery.js'></script>
 	<script src='javascripts/app.js'></script>
 </head>
 <body>
+  <button data-behavior="add-clock">Add a clock</button>
+  <div data-target="clocks"></div>
+
+  <script id="clock-template" type="text/x-handlebars-template">
+    <div class="clock" data-id="{{ id }}">
+      <div class="clock-id">{{ id }}</div>
+
+      <h2>{{ name }}</h2>
+
+      <p>Minutes:</p>
+
+      <input data-target="minutes" type="text" />
+      <button data-behavior="begin">Set Timer</button>
+
+      Time left:
+
+      <div class="clock-face">
+        <span class="hour">00</span>:<span class="minute">00</span>:<span class="second">00</span>
+      </div>
+
+      <a data-behavior="remove-clock">remove</a>
+    </div>
+  </script>
 </body>
 </html>
