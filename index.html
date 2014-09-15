@@ -14,20 +14,43 @@
 
   <script id="timer-template" type="text/x-handlebars-template">
     <div class="timer" data-id="{{ id }}">
-      <h2>{{ name }}</h2>
+      <h2 data-target="timer-name-{{ id }}">{{ name }}</h2>
 
-      Enter number of minutes:<br>
+      <div class="initial-fields">
+        Enter number of minutes:<br>
 
-      <input data-target="minutes" type="text" /><button data-behavior="start-timer-{{ id }}">Start</button>
+        <input data-target="minutes" type="text" /><button data-behavior="start-timer-{{ id }}">Start</button>
+      </div>
 
       <div class="timer-face">
         <span class="hour">00</span>:<span class="minute">00</span>:<span class="second">00</span>
       </div>
 
-      <div class="controls">
+      <div class="controls-left">
         <a data-behavior="play-timer-{{ id }}" class="play">play</a>
         <a data-behavior="pause-timer-{{ id }}" class="pause">pause</a>
         <a data-behavior="remove-timer-{{ id }}" class="remove">remove</a>
+      </div>
+
+      <div class="controls-right">
+        <a data-behavior="toggle-options-for-{{ id }}" class="remove">[+] options</a>
+      </div>
+
+      <div class="options-form">
+        Rename Timer:
+        <br>
+        <input type="text" class="rename">
+        <br>
+
+        Edit Time:
+        <br>
+        <input type="text">
+        <br>
+
+        Timer Notes:
+        <textarea class="notes" data-target="notes"></textarea>
+
+        <button data-behavior="save-timer-options-{{ id }}">Save</button>
       </div>
     </div>
   </script>

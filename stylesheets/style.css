@@ -1,5 +1,15 @@
 html, body {
   font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-size: 13px;
+}
+
+input,
+textarea {
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  padding: 3px;
 }
 
 .timer {
@@ -10,7 +20,7 @@ html, body {
   box-shadow: 0 0 5px #aaa;
   -moz-box-shadow: 0 0 5px #aaa;
   -webkit-box-shadow: 0 0 5px #aaa;
-  height: 200px;
+  height: auto;
   float: left;
   margin: 20px;
   padding: 20px;
@@ -40,18 +50,37 @@ html, body {
   margin: 10px 0;
 }
 
-.controls {
+.controls-left,
+.controls-right {
   bottom: 5px;
   position: absolute;
+}
+
+.controls-left {
   left: 5px;
 }
 
-.controls a {
-  color: red;
+.controls-right {
+  right: 5px;
+}
+
+.controls-right a,
+.controls-left a {
+  color: #848484;
   cursor: pointer;
   font-size: 11px;
 }
 
-.controls a:hover {
-  text-decoration: underline;
+.controls-right a:hover,
+.controls-left a:hover {
+  color: #000;
+}
+
+.options-form {
+  display: none;
+  text-align: left;
+}
+
+.options-form.show {
+  display: block;
 }

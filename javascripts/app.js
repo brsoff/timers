@@ -75,6 +75,7 @@ var app = {
       var id = $(this).closest('.timer').data('id');
       var minutes = $(this).prev().val();
 
+      $(this).closest('.initial-fields').hide();
       app.setTimer(id, minutes);
     });
 
@@ -88,6 +89,21 @@ var app = {
       var id = $(this).closest('.timer').data('id');
       console.log('play');
       app.playTimer(id);
+    });
+
+    $('[data-behavior=\'toggle-options-for-' + id + '\'').on('click', function () {
+      $(this).closest('.timer').find('.options-form').toggleClass('show');
+    });
+
+    $('[data-behavior=\'save-timer-options-' + id + '\'').on('click', function () {
+      var rename = $(this).closest('.options-form').find('.rename').val();
+      // var notes = $(this).closest('.options=form').find('.notes');
+
+      var timer = app.getTimer(id);
+      if ( rename != '') {
+        timer.name = rename;
+        $(this).closest('h2').text(rename);
+      }
     });
   },
 
