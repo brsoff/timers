@@ -9,24 +9,26 @@
 	<script src='javascripts/app.js'></script>
 </head>
 <body>
-  <button data-behavior="add-clock">Add a clock</button>
-  <div data-target="clocks"></div>
+  <button data-behavior="add-timer">Add a timer</button>
+  <div data-target="timers"></div>
 
-  <script id="clock-template" type="text/x-handlebars-template">
-    <div class="clock" data-id="{{ id }}">
-      <div class="clock-id">{{ id }}</div>
-
+  <script id="timer-template" type="text/x-handlebars-template">
+    <div class="timer" data-id="{{ id }}">
       <h2>{{ name }}</h2>
 
       Enter number of minutes:<br>
 
-      <input data-target="minutes" type="text" /><button data-behavior="begin">Start</button>
+      <input data-target="minutes" type="text" /><button data-behavior="start-timer-{{ id }}">Start</button>
 
-      <div class="clock-face">
+      <div class="timer-face">
         <span class="hour">00</span>:<span class="minute">00</span>:<span class="second">00</span>
       </div>
 
-      <a data-behavior="remove-clock">remove</a>
+      <div class="controls">
+        <a data-behavior="play-timer-{{ id }}" class="play">play</a>
+        <a data-behavior="pause-timer-{{ id }}" class="pause">pause</a>
+        <a data-behavior="remove-timer-{{ id }}" class="remove">remove</a>
+      </div>
     </div>
   </script>
 </body>

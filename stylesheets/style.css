@@ -1,8 +1,8 @@
 html, body {
-  font-family: 'Droid Sans Mono';
+  font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 }
 
-.clock {
+.timer {
   background-color: #f7f7f7;
   border-radius: 3px;
   -moz-border-radius: 3px;
@@ -19,18 +19,16 @@ html, body {
   width: 200px;
 }
 
-.clock.expired {
+.timer h2, .timer-face {
+  font-family: 'Droid Sans Mono';;
+}
+
+.timer.expired {
   background-color: red;
   color: #fff;
 }
 
-.clock-id {
-  position: absolute;
-  left: -5px;
-  top: -5px;
-}
-
-.clock-face {
+.timer-face {
   background-color: #000;
   border-radius: 3px;
   -moz-border-radius: 3px;
@@ -39,4 +37,21 @@ html, body {
   font-size: 32px;
   font-weight: bold;
   letter-spacing: 2px;
+  margin: 10px 0;
+}
+
+.controls {
+  bottom: 5px;
+  position: absolute;
+  left: 5px;
+}
+
+.controls a {
+  color: red;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.controls a:hover {
+  text-decoration: underline;
 }

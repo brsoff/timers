@@ -3,24 +3,30 @@ var app = {
     this.display = new app.Display ();
     app.bind();
 
-    app.Clock.prototype.countdown = function() {
+    app.Timer.prototype.startCountdown = function() {
       var self = this;
 
-      self.populateClock();
-
-      setInterval(function () {
-        self.populateClock();
+      self.populateTimer();
+      self.countdown = setInterval(function () {
+        self.populateTimer()
       }, 1000);
     },
 
-    app.Clock.prototype.populateClock = function () {
+    app.Timer.prototype.restartCountdown = function() {
+      self.countdown = setInterval(function () {
+        self.populateTimer()
+      }, 1000);
+    },
+
+    app.Timer.prototype.populateTimer = function () {
       var self = this;
-
       var id = self.id;
-      var current = (new Date().getTime() / 1000);
-      var remaining = (self.expiresAt - current); //seconds
 
-      if (remaining < 1) {
+      self.secondsRemaining -= 1;
+
+      var remaining = self.secondsRemaining;
+
+      if (remaining < 0) {
         $('[data-id=' + id + ']').addClass('expired');
       } else {
         var hours = self.formatNumber(remaining / 3600);
@@ -29,15 +35,15 @@ var app = {
         var minutes = self.formatNumber(remaining / 60);
         var seconds = self.formatNumber(remaining % 60);
 
-        var $clock = $('[data-id=' + id + ']');
+        var $timer = $('[data-id=' + id + ']');
 
-        $clock.find('.hour').html(hours);
-        $clock.find('.minute').html(minutes);
-        $clock.find('.second').html(seconds);
+        $timer.find('.hour').html(hours);
+        $timer.find('.minute').html(minutes);
+        $timer.find('.second').html(seconds);
       }
     },
 
-    app.Clock.prototype.formatNumber = function (num) {
+    app.Timer.prototype.formatNumber = function (num) {
       var parsed = parseInt(num).toString();
       var formatted = parsed.length === 1 ? ('0' + parsed) : parsed
       return formatted;
@@ -45,58 +51,88 @@ var app = {
   },
 
   bind: function () {
-    $('[data-behavior=\'add-clock\'').on('click', function () {
-      var name = window.prompt('Please type a name for this clock:');
-      app.makeClock(name);
+    $('[data-behavior=\'add-timer\'').on('click', function () {
+      app.makeTimer();
     });
   },
 
-  makeClock: function (name) {
-    var clock = new app.Clock(name);
+  makeTimer: function () {
+    var timer = new app.Timer();
 
-    app.display.clocks.push(clock);
+    app.display.timers.push(timer);
 
-    var source = $("#clock-template").html();
+    var source = $("#timer-template").html();
     var template = Handlebars.compile(source);
-    var html = template(clock);
+    var html = template(timer);
 
-    $('[data-target=\'clocks\']').append(html);
+    $('[data-target=\'timers\']').append(html);
 
-    app.bindClockBehaviors();
+    app.bindTimerBehaviors(timer.id);
   },
 
-  bindClockBehaviors: function () {
-    $('[data-behavior=\'begin\'').on('click', function () {
-      var id = $(this).closest('.clock').data('id');
+  bindTimerBehaviors: function (id) {
+    $('[data-behavior=\'start-timer-' + id + '\'').on('click', function () {
+      var id = $(this).closest('.timer').data('id');
       var minutes = $(this).prev().val();
 
       app.setTimer(id, minutes);
     });
+
+    $('[data-behavior=\'pause-timer-' + id + '\'').on('click', function () {
+      var id = $(this).closest('.timer').data('id');
+      console.log('pause');
+      app.pauseTimer(id);
+    });
+
+    $('[data-behavior=\'play-timer-' + id + '\'').on('click', function () {
+      var id = $(this).closest('.timer').data('id');
+      console.log('play');
+      app.playTimer(id);
+    });
+  },
+
+  pauseTimer: function (id) {
+    var timer = app.getTimer(id);
+    timer.paused = true;
+    clearInterval(timer.countdown);
+  },
+
+  playTimer: function (id) {
+    var timer = app.getTimer(id);
+    timer.startCountdown();
   },
 
   setTimer: function (id, minutes) {
-    var clock = app.display.clocks.filter(function (c) { return c.id === id; });
-    var startsAt = new Date().getTime();
-    var expiresAt = (startsAt + (minutes * 60 * 1000)) / 1000;
+    var timer = app.getTimer(id);
+    var startedAt = new Date().getTime();
+    var expiresAt = (startedAt + (minutes * 60 * 1000)) / 1000;
 
-    clock[0].minutes = parseInt(minutes);
-    clock[0].expiresAt = startsAt;
-    clock[0].expiresAt = expiresAt;
-    clock[0].countdown();
+    timer.minutes = parseInt(minutes);
+    timer.seconds = timer.minutes * 60;
+    timer.secondsRemaining = expiresAt - (startedAt / 1000);
+    timer.startCountdown();
+  },
+
+  getTimer: function (id) {
+    var timer = app.display.timers.filter(function (c) { return c.id === id; });
+    return timer[0];
   },
 
   Display: function () {
-    this.clocks = [];
+    this.timers = [];
   },
 
-  Clock: function (name) {
+  Timer: function (name) {
     var self = this;
 
-    self.id = app.display.clocks.length + 1;
-    self.name = name;
-    self.startsAt = null;
-    self.expiresAt = null;
+    self.id = app.display.timers.length + 1;
+    self.name = 'Timer #' + self.id;
     self.minutes = null;
+    self.seconds = null;
+    self.secondsRemaining = null;
+    self.elapsedSeconds = null;
+    self.countdown = null;
+    self.paused = false;
   }
 }
 
